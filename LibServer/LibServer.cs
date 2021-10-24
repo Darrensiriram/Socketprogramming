@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace LibServer
 {
@@ -23,6 +25,31 @@ namespace LibServer
     // Note: Complete the implementation of this class. You can adjust the structure of this class. 
     public class SequentialServer
     {
+        public Socket clientSocket;
+        public IPAddress localIpAddress;
+        public IPAddress bookHelperIpAddress;
+        public IPAddress userHelperIpAddress;
+        public Setting settings;
+        // all the required settings are provided in this file
+        public string configFile = @"../../../../ClientServerConfig.json";
+
+        public SequentialServer()
+        {
+            //todo: implement the body. Add extra fields and methods to the class if it is needed
+            try
+            {
+                string configContent = File.ReadAllText(configFile);
+                this.settings = JsonSerializer.Deserialize<Setting>(configContent);
+                this.localIpAddress = IPAddress.Parse(settings.ServerIPAddress);
+                this.bookHelperIpAddress = IPAddress.Parse(settings.BookHelperIPAddress);
+                this.userHelperIpAddress = IPAddress.Parse(settings.UserHelperIPAddress);
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine("[Client Exception] {0}", e.Message);
+            }
+        }
+
         public void bookConnectionReceiver()
         {
             var Booksettings = new Setting();
