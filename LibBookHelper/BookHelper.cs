@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Json;
 
 namespace BookHelper
 {
@@ -23,25 +21,6 @@ namespace BookHelper
     // Note: Complete the implementation of this class. You can adjust the structure of this class.
     public class SequentialHelper
     {
-        private Setting settings;
-        private IPAddress ipAddress;
-        public string configFile = @"../../../../ClientServerConfig.json";
-
-        public SequentialHelper()
-        {
-            //todo: implement the body. Add extra fields and methods to the class if needed
-            try
-            {
-                string configContent = File.ReadAllText(configFile);
-                this.settings = JsonSerializer.Deserialize<Setting>(configContent);
-                this.ipAddress = IPAddress.Parse(settings.BookHelperIPAddress);
-            }
-            catch (Exception e)
-            {
-                Console.Out.WriteLine("[Client Exception] {0}", e.Message);
-            }
-        }
-
         public void BookConnectionSender()
         {
             
