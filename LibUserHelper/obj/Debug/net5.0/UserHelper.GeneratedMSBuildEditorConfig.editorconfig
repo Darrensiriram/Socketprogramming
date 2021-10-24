@@ -7,4 +7,4 @@ build_property.PublishSingleFile =
 build_property.IncludeAllContentForSelfExtract = 
 build_property._SupportedPlatformList = Android,iOS,Linux,macOS,Windows
 build_property.RootNamespace = UserHelper
-build_property.ProjectDir = /Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibUserHelper/
+build_property.ProjectDir = C:\Users\thijs\source\repos\Socketprogramming\LibUserHelper\
