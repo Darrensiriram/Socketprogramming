@@ -46,7 +46,9 @@ namespace BookHelper
         {
             try
             {
-    
+                string configContent = File.ReadAllText(json);
+
+                Output mObject = JsonSerializer.Deserialize<Output>(json);
             }
             catch (Exception e)
             {
