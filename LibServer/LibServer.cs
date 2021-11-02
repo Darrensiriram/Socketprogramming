@@ -60,7 +60,7 @@ namespace LibServer
             IPEndPoint localEndpoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.ServerPortNumber);
             EndPoint remoteEP = (EndPoint)sender;
-            IPEndPoint senderBook = new IPEndPoint(this.bookHelperIpAddress, 0);
+            IPEndPoint senderBook = new IPEndPoint(this.bookHelperIpAddress, this.settings.BookHelperPortNumber);
             EndPoint remoteEPBook = (EndPoint)senderBook;
             try
             {
