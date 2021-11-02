@@ -1,5 +1,4 @@
 ﻿using LibData;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -109,8 +108,8 @@ namespace LibClient
             {
                 b = sock.Receive(buffer);
                 data = Encoding.ASCII.GetString(buffer, 0, b);
-                JObject mObject = JObject.Parse(data);
-                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject["Type"].ToString());
+                Message mObject = JsonSerializer.Deserialize<Message>(data);
+                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
 
                 switch (mType)
                 {

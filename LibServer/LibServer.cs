@@ -1,5 +1,4 @@
 ﻿using LibData;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
@@ -70,8 +69,8 @@ namespace LibServer
             {
                 b = sock.Receive(buffer);
                 data = Encoding.ASCII.GetString(buffer, 0, b);
-                JObject mObject = JObject.Parse(data);
-                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject["Type"].ToString());
+                Message mObject = JsonSerializer.Deserialize<Message>(data);
+                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
 
                 switch (mType)
                 {
@@ -81,7 +80,7 @@ namespace LibServer
                     case MessageType.BookInquiry:
                         //TODO SEND MESSAGE TO BOOKHELPER
 
-                        msg = createMessage(mObject["Content"].ToString(), MessageType.BookInquiryReply);
+                        msg = createMessage(mObject.Content.ToString(), MessageType.BookInquiryReply);
                         break;
                 }
 
