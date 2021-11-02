@@ -56,41 +56,50 @@ namespace LibServer
         {
             byte[] buffer = new byte[1000];
             byte[] msg = new byte[1000];
-            int b;
+            Socket sock;
             int MsgCounter = 0;
+            int b = 0;
             string data;
-
-            IPEndPoint localEndPoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
-            Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            sock.Bind(localEndPoint);
-            sock.Listen(this.settings.ServerListeningQueue);
-            Console.WriteLine("\n Waiting for clients...");
-            Socket newSock = sock.Accept();
-            while (true)
+            IPEndPoint localEndpoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+            EndPoint remoteEP = (EndPoint)sender;
+            try
             {
-                b = sock.Receive(buffer);
-                data = Encoding.ASCII.GetString(buffer, 0, b);
-                Message mObject = JsonSerializer.Deserialize<Message>(data);
-                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-
-                switch (mType)
+                sock = new Socket(AddressFamily.InterNetwork,
+                SocketType.Dgram, ProtocolType.Udp);
+                sock.Bind(localEndpoint);
+                while (MsgCounter < this.settings.ServerListeningQueue)
                 {
-                    case MessageType.Hello:
-                        Console.WriteLine("A message received from " + mObject.Content.ToString());
-                        msg = createMessage("FUCK YOU", MessageType.Welcome);
-                        break;
-                    case MessageType.BookInquiry:
-                        //TODO SEND MESSAGE TO BOOKHELPER
+                    Console.WriteLine("\n Waiting for the next client message..");
 
-                        msg = createMessage(mObject.Content.ToString(), MessageType.BookInquiryReply);
-                        break;
+                    b = sock.ReceiveFrom(buffer, ref remoteEP);
+                    data = Encoding.ASCII.GetString(buffer, 0, b);
+                    Message mObject = JsonSerializer.Deserialize<Message>(data);
+                    MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
+
+                    switch (mType)
+                    {
+                        case MessageType.Hello:
+                            Console.WriteLine("A message received from " + mObject.Content.ToString());
+                            msg = createMessage("FUCK YOU", MessageType.Welcome);
+                            break;
+                        case MessageType.BookInquiry:
+                            //TODO SEND MESSAGE TO BOOKHELPER
+
+                            msg = createMessage(mObject.Content.ToString(), MessageType.BookInquiryReply);
+                            break;
+                    }
+
+                    sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
+
+                    MsgCounter++;
                 }
-
-                sock.Send(msg);
-
-                MsgCounter++;
+                sock.Close();
             }
-            sock.Close();
+            catch
+            {
+                Console.WriteLine("\n Socket Error. Terminating");
+            }
         }
 
 
