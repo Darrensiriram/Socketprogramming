@@ -57,12 +57,13 @@ namespace LibServer
             byte[] buffer = new byte[1000];
             byte[] msg = new byte[1000];
             int b;
+            int MsgCounter = 0;
             string data;
 
             IPEndPoint localEndPoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             sock.Bind(localEndPoint);
-            sock.Listen(3);
+            sock.Listen(this.settings.ServerListeningQueue);
             Console.WriteLine("\n Waiting for clients...");
             Socket newSock = sock.Accept();
             while (true)
@@ -75,6 +76,7 @@ namespace LibServer
                 switch (mType)
                 {
                     case MessageType.Hello:
+                        Console.WriteLine("A message received from " + mObject.Content.ToString());
                         msg = createMessage("FUCK YOU", MessageType.Welcome);
                         break;
                     case MessageType.BookInquiry:
@@ -85,6 +87,8 @@ namespace LibServer
                 }
 
                 sock.Send(msg);
+
+                MsgCounter++;
             }
             sock.Close();
         }

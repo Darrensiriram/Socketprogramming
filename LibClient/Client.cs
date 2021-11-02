@@ -106,6 +106,7 @@ namespace LibClient
 
             while (true)
             {
+
                 b = sock.Receive(buffer);
                 data = Encoding.ASCII.GetString(buffer, 0, b);
                 Message mObject = JsonSerializer.Deserialize<Message>(data);
@@ -114,6 +115,7 @@ namespace LibClient
                 switch (mType)
                 {
                     case MessageType.Welcome:
+                        Console.WriteLine("From server: " + mObject.Content.ToString());
                         msg = createMessage(this.bookName, MessageType.BookInquiry);
                         break;
                     case MessageType.BookInquiryReply:
