@@ -4,4 +4,9 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LibBookHelper\BookHelper.csproj" />
+      <ProjectReference Include="..\LibUserHelper\UserHelper.csproj" />
+    </ItemGroup>
 </Project>

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 
 namespace LibClient
@@ -53,7 +55,55 @@ namespace LibClient
         //public string configFile = @"../../../../ClientServerConfig.json"; // for debugging
 
         // todo: add extra fields here in case needed 
-
+    
+        public void clientReceiver()
+        {
+            byte[] buffer = new byte[1000];
+            byte[] msg = new byte[1000];
+            string data = null;
+            IPAddress ip = IPAddress.Parse("127.0.0.1");
+            IPEndPoint serverEndpoint = new IPEndPoint(ip,32000);
+            ConsoleKeyInfo key;
+            Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            sock.Connect(serverEndpoint);
+            
+            while (true)
+            {
+                Console.WriteLine("\nDo you want to talk to the user or helper? ");
+                data = Console.ReadLine();
+                if (data.Length != 0){
+                    msg =  Encoding.ASCII.GetBytes(data);
+                    sock.Send(msg);
+                    int b = sock.Receive(buffer);
+                    data = Encoding.ASCII.GetString(buffer, 0 , b);
+                    Console.WriteLine("" + data);
+                    data = null;
+                }
+                // make a desision if you want to talk to the user or book
+                ConsoleKeyInfo choice;
+                Console.WriteLine("\n << Book 'b', User 'u' >>");
+                choice = Console.ReadKey();
+                if (choice.KeyChar == 'b')
+                {
+                    sock.Send(Encoding.ASCII.GetBytes(bookName)); // placing for the data you send to the server
+                    Console.WriteLine(" " + bookName); // double check if the book name is correct! 
+                    break;
+                    //todo make a connection to wards book helper!
+                }
+                
+                Console.WriteLine("\n<< Continue 'y' , Exit 'e'>>\n");
+                key = Console.ReadKey();
+                
+                if (key.KeyChar == 'e')
+                {
+                    sock.Send(Encoding.ASCII.GetBytes("Closed"));
+                    Console.WriteLine("\nExiting.. Press any key to continue");
+                    key = Console.ReadKey();
+                    sock.Close();
+                    break;
+                }
+            }
+        }
         /// <summary>
         ///     Initializes the client based on the given parameters and seeting file.
         /// </summary>
@@ -89,7 +139,7 @@ namespace LibClient
         {
             // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
             // Adding extra methods to the class is permitted. The signature of this method must not change.
-
+            clientReceiver();
             return result;
         }
     }

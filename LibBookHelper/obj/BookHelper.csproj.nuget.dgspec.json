@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibBookHelper/BookHelper.csproj": {}
+    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibBookHelper/BookHelper.csproj": {}
   },
   "projects": {
-    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibBookHelper/BookHelper.csproj": {
+    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibBookHelper/BookHelper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibBookHelper/BookHelper.csproj",
+        "projectUniqueName": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibBookHelper/BookHelper.csproj",
         "projectName": "BookHelper",
-        "projectPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibBookHelper/BookHelper.csproj",
+        "projectPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibBookHelper/BookHelper.csproj",
         "packagesPath": "/Users/darren/.nuget/packages/",
-        "outputPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibBookHelper/obj/",
+        "outputPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibBookHelper/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/darren/.nuget/NuGet/NuGet.Config"

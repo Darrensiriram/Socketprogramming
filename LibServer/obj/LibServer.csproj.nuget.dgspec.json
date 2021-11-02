@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibServer/LibServer.csproj": {}
+    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj": {}
   },
   "projects": {
-    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibServer/LibServer.csproj": {
+    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibServer/LibServer.csproj",
+        "projectUniqueName": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj",
         "projectName": "LibServer",
-        "projectPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibServer/LibServer.csproj",
+        "projectPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj",
         "packagesPath": "/Users/darren/.nuget/packages/",
-        "outputPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment/Networking/DistLibrary/LibServer/obj/",
+        "outputPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/darren/.nuget/NuGet/NuGet.Config"

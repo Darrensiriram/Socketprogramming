@@ -49,8 +49,9 @@ namespace LibServer
                 Console.Out.WriteLine("[Client Exception] {0}", e.Message);
             }
         }
+        
 
-        public void bookConnectionReceiver()
+        public void LibServerSender()
         {
             var Booksettings = new Setting();
             byte[] buffer = new byte[1000];
@@ -63,7 +64,6 @@ namespace LibServer
             sock.Listen(3);
             Console.WriteLine("\n Waiting for clients...");
             Socket newSock = sock.Accept();
-
             while (true)
             {
                 int b = newSock.Receive(buffer);
@@ -93,7 +93,7 @@ namespace LibServer
         public void start()
         {
             //todo: implement the body. Add extra fields and methods to the class if it is needed
-            bookConnectionReceiver();
+            LibServerSender();
         }
     }
 }
