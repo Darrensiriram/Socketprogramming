@@ -19,9 +19,6 @@ namespace LibServer
         public string UserHelperIPAddress { get; set; }
         public int ServerListeningQueue { get; set; }
     }
-    
-   
-
 
     // Note: Complete the implementation of this class. You can adjust the structure of this class. 
     public class SequentialServer
@@ -61,7 +58,7 @@ namespace LibServer
             int b = 0;
             string data;
             IPEndPoint localEndpoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
-            IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.ServerPortNumber);
             EndPoint remoteEP = (EndPoint)sender;
             IPEndPoint senderBook = new IPEndPoint(this.bookHelperIpAddress, 0);
             EndPoint remoteEPBook = (EndPoint)senderBook;
@@ -73,6 +70,8 @@ namespace LibServer
                 while (MsgCounter < this.settings.ServerListeningQueue)
                 {
                     Console.WriteLine("\n Waiting for the next client message..");
+                    //debugging purpose
+                    Console.WriteLine(this.settings.ServerListeningQueue.ToString());
 
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
                     data = Encoding.ASCII.GetString(buffer, 0, b);
@@ -82,19 +81,22 @@ namespace LibServer
                     switch (mType)
                     {
                         case MessageType.Hello:
-                            Console.WriteLine("A message received from " + mObject.Content.ToString());
-                            msg = createMessage("FUCK YOU", MessageType.Welcome);
+                            Console.WriteLine("A message received. Message: " + mType);
+                            msg = createMessage("", MessageType.Welcome);
+                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                             break;
                         case MessageType.BookInquiry:
                             //TODO SEND MESSAGE TO BOOKHELPER
-
+                            Console.WriteLine(mObject.Content.ToString());
                             sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEPBook);
                             msg = createMessage(mObject.Content.ToString(), MessageType.BookInquiryReply);
+                            // todo bookinfo naar de client forwarden
                             break;
+                        
                     }
 
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-
+                   
                     MsgCounter++;
                 }
                 sock.Close();
@@ -109,7 +111,7 @@ namespace LibServer
 
         public void start()
         {
-            //todo: implement the body. Add extra fields and methods to the class if it is needed
+            
             LibServerSender();
         }
         public byte[] createMessage(string content, MessageType type)

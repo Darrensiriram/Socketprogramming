@@ -1,11 +1,14 @@
 ﻿using LibData;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace LibClient
 {
@@ -35,6 +38,7 @@ namespace LibClient
         public string
             BorrowerEmail
         { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
+        
     }
 
     // Note: Complete the implementation of this class. You can adjust the structure of this class.
@@ -86,11 +90,7 @@ namespace LibClient
             }
         }
 
-        /// <summary>
-        ///     Establishes the connection with the server and requests the book according to the specified protocol.
-        ///     Note: The signature of this method must not change.
-        /// </summary>
-        /// <returns>The result of the request</returns>
+
         public Output start()
         {
             // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
@@ -124,15 +124,14 @@ namespace LibClient
                     switch (mType)
                     {
                         case MessageType.Welcome:
-
-                            Console.WriteLine("From server: " + mObject.Content.ToString());
-                            Console.WriteLine("A message received from " + mObject.Content.ToString());
+                            Console.WriteLine("From server Message: " + mType);
                             msg = createMessage(this.bookName, MessageType.BookInquiry);
                             break;
                         case MessageType.BookInquiryReply:
-                            sock.Listen(this.settings.ServerListeningQueue);
+                            Console.WriteLine("Data from server: " + mObject.Content.ToString());
                             sock.Close();
                             break;
+                        
                         default:
                             break;
                     }

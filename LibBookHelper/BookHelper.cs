@@ -18,7 +18,42 @@ namespace BookHelper
         public string UserHelperIPAddress { get; set; }
         public int ServerListeningQueue { get; set; }
     }
+
+    public class Output
+    {
+        public string Client_id { get; set; } // the id of the client that requests the book
+        public string BookName { get; set; } // the name of the book to be reqyested
+        public string Status { get; set; } // final status received from the server
+
+        public string
+            BorrowerName
+        { get; set; } // the name of the borrower in case the status is borrowed, otherwise null
+
+        public string
+            BorrowerEmail
+        { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
+        
+    }
+
+    public class BookOutput
+    {
+        private Output Output; 
+        public string json = @"../../../../Books.json";
+
+
+        public BookOutput()
+        {
+            try
+            {
     
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine("[Client Exception] {0}", e.Message);
+            }  
+        }
+
+    }
     
     // Note: Complete the implementation of this class. You can adjust the structure of this class.
     public class SequentialHelper
