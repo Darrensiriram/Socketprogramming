@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LibData;
+using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -53,12 +55,12 @@ namespace LibServer
 
         public void LibServerSender()
         {
-            var Booksettings = new Setting();
             byte[] buffer = new byte[1000];
-            byte[] msg = Encoding.ASCII.GetBytes("From server : your message has been deliverd.\n");
-            string data = null;
-            IPAddress ip = IPAddress.Parse("127.0.0.1");
-            IPEndPoint localEndPoint = new IPEndPoint(ip, 32000);
+            byte[] msg = new byte[1000];
+            int b;
+            string data;
+
+            IPEndPoint localEndPoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             sock.Bind(localEndPoint);
             sock.Listen(3);
@@ -66,34 +68,42 @@ namespace LibServer
             Socket newSock = sock.Accept();
             while (true)
             {
-                int b = newSock.Receive(buffer);
+                b = sock.Receive(buffer);
                 data = Encoding.ASCII.GetString(buffer, 0, b);
-                if (data == "closed")
+                JObject mObject = JObject.Parse(data);
+                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject["Type"].ToString());
+
+                switch (mType)
                 {
-                    newSock.Close();
-                    Console.WriteLine("Closing the socket...");
-                    break;
+                    case MessageType.Hello:
+                        msg = createMessage("FUCK YOU", MessageType.Welcome);
+                        break;
+                    case MessageType.BookInquiry:
+                        //TODO SEND MESSAGE TO BOOKHELPER
+
+                        msg = createMessage(mObject["Content"].ToString(), MessageType.BookInquiryReply);
+                        break;
                 }
 
-                else if (data == "Hello")
-                {
-                    Console.WriteLine("Welcome hermano!");
-                    break;
-                    
-                }
-                else
-                {
-                    Console.WriteLine("" + data);
-                    data = null;
-                    newSock.Send(msg);
-                }
+                sock.Send(msg);
             }
             sock.Close();
         }
+
+
+
         public void start()
         {
             //todo: implement the body. Add extra fields and methods to the class if it is needed
             LibServerSender();
+        }
+        public byte[] createMessage(string content, MessageType type)
+        {
+            Message m = new Message();
+            m.Content = content;
+            m.Type = type;
+
+            return Encoding.ASCII.GetBytes(JsonSerializer.Serialize(m));
         }
     }
 }
