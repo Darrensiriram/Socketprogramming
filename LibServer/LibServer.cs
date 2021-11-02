@@ -58,8 +58,10 @@ namespace LibServer
             int b = 0;
             string data;
             IPEndPoint localEndpoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
+
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.ServerPortNumber);
             EndPoint remoteEP = (EndPoint)sender;
+            
             IPEndPoint senderBook = new IPEndPoint(this.bookHelperIpAddress, this.settings.BookHelperPortNumber);
             EndPoint remoteEPBook = (EndPoint)senderBook;
             try
@@ -88,11 +90,14 @@ namespace LibServer
                         case MessageType.BookInquiry:
                             //TODO SEND MESSAGE TO BOOKHELPER
                             Console.WriteLine(mObject.Content.ToString());
-                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEPBook);
                             msg = createMessage(mObject.Content.ToString(), MessageType.BookInquiryReply);
+                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEPBook);
                             // todo bookinfo naar de client forwarden
                             break;
-                        
+                        case MessageType.BookInquiryReply:
+                            Console.WriteLine(mObject.Content.ToString());
+                            break;
+
                     }
 
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);

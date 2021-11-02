@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Text;
 using LibData;
+using System.Collections.Generic;
 
 namespace BookHelper
 {
@@ -38,17 +39,17 @@ namespace BookHelper
 
     public class BookOutput
     {
-        private Output Output; 
         public string json = @"../../../../Books.json";
-
+        public List<Output> output;
 
         public BookOutput()
         {
             try
             {
-                string configContent = File.ReadAllText(json);
+                string file = File.ReadAllText(json);
 
-                Output mObject = JsonSerializer.Deserialize<Output>(json);
+                output = JsonSerializer.Deserialize<List<Output>>(file);
+
             }
             catch (Exception e)
             {
@@ -56,6 +57,17 @@ namespace BookHelper
             }  
         }
 
+        public string getOuputByName(string name) {
+            Output o = new Output();
+
+            foreach (Output item in output) {
+                if (item.BookName == name) {
+                    o = item;
+                }
+            }
+
+            return o.ToString();
+        }
     }
     
     // Note: Complete the implementation of this class. You can adjust the structure of this class.
@@ -85,7 +97,9 @@ namespace BookHelper
         
         public void start()
         {
-            //todo: implement the body. Add extra fields and methods to the class if needed
+            //todo: implement the body. Add extra fields and methods to the class if needed\
+            BookOutput bHelper = new BookOutput();
+
             byte[] buffer = new byte[1000];
             byte[] msg = new byte[1000];
             Socket sock;
@@ -113,11 +127,10 @@ namespace BookHelper
 
                     switch (mType)
                     {
-                        case MessageType.BookInquiry:
-                            Console.WriteLine("A message received from server");
-                            Console.WriteLine("Message: " + mType);
-                            Console.WriteLine("Content: " + mObject.Content.ToString());
-                            msg = createMessage("this is a test", MessageType.BookInquiry);
+                        case MessageType.BookInquiryReply:
+                            Console.WriteLine("A message received from server Message: " + mType);
+                           
+                            msg = createMessage(bHelper.getOuputByName(mObject.Content.ToString()), MessageType.BookInquiryReply);
                             sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                             break;
                     }
