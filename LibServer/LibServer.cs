@@ -63,6 +63,8 @@ namespace LibServer
             IPEndPoint localEndpoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
             EndPoint remoteEP = (EndPoint)sender;
+            IPEndPoint senderBook = new IPEndPoint(this.bookHelperIpAddress, 0);
+            EndPoint remoteEPBook = (EndPoint)senderBook;
             try
             {
                 sock = new Socket(AddressFamily.InterNetwork,
@@ -86,6 +88,7 @@ namespace LibServer
                         case MessageType.BookInquiry:
                             //TODO SEND MESSAGE TO BOOKHELPER
 
+                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEPBook);
                             msg = createMessage(mObject.Content.ToString(), MessageType.BookInquiryReply);
                             break;
                     }
