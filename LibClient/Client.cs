@@ -29,10 +29,12 @@ namespace LibClient
         public string Status { get; set; } // final status received from the server
 
         public string
-            BorrowerName { get; set; } // the name of the borrower in case the status is borrowed, otherwise null
+            BorrowerName
+        { get; set; } // the name of the borrower in case the status is borrowed, otherwise null
 
         public string
-            BorrowerEmail { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
+            BorrowerEmail
+        { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
     }
 
     // Note: Complete the implementation of this class. You can adjust the structure of this class.
@@ -56,8 +58,8 @@ namespace LibClient
         //public string configFile = @"../../../../ClientServerConfig.json"; // for debugging
 
         // todo: add extra fields here in case needed 
-    
-       
+
+
         /// <summary>
         ///     Initializes the client based on the given parameters and seeting file.
         /// </summary>
@@ -94,40 +96,55 @@ namespace LibClient
             // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
             // Adding extra methods to the class is permitted. The signature of this method must not change.
             byte[] buffer = new byte[1000];
+
             byte[] msg;
             int b;
-            string data = null;
-            IPEndPoint serverEndpoint = new IPEndPoint(this.ipAddress, this.settings.ServerPortNumber){};
-            Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            sock.Connect(serverEndpoint);
+            string data;
+            Socket sock;
 
-            msg = createMessage(this.client_id, MessageType.Hello);
-            sock.Send(msg);
+            IPEndPoint ServerEndpoint = new IPEndPoint(this.ipAddress, this.settings.ServerPortNumber);
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+            EndPoint remoteEP = (EndPoint)sender;
 
-            while (true)
+            try
             {
-
-                b = sock.Receive(buffer);
-                data = Encoding.ASCII.GetString(buffer, 0, b);
-                Message mObject = JsonSerializer.Deserialize<Message>(data);
-                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-
-                switch (mType)
+                sock = new Socket(AddressFamily.InterNetwork,
+                SocketType.Dgram, ProtocolType.Udp);
+                //send hello standaard
+                msg = createMessage(this.client_id, MessageType.Hello);
+                sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
+                while (true)
                 {
-                    case MessageType.Welcome:
-                        Console.WriteLine("From server: " + mObject.Content.ToString());
-                        msg = createMessage(this.bookName, MessageType.BookInquiry);
-                        break;
-                    case MessageType.BookInquiryReply:
-                        sock.Listen(this.settings.ServerListeningQueue);
-                        sock.Close();
-                        break;
-                    default:
-                        break;
-                }
 
-                sock.Send(msg);
+                    b = sock.ReceiveFrom(buffer, ref remoteEP);
+                    data = Encoding.ASCII.GetString(buffer, 0, b);
+                    Message mObject = JsonSerializer.Deserialize<Message>(data);
+                    MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
+
+                    switch (mType)
+                    {
+                        case MessageType.Welcome:
+
+                            Console.WriteLine("From server: " + mObject.Content.ToString());
+                            Console.WriteLine("A message received from " + mObject.Content.ToString());
+                            msg = createMessage(this.bookName, MessageType.BookInquiry);
+                            break;
+                        case MessageType.BookInquiryReply:
+                            sock.Listen(this.settings.ServerListeningQueue);
+                            sock.Close();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
+                }
             }
+            catch
+            {
+                Console.WriteLine("\n Socket Error. Terminating");
+            }
+
             return result;
         }
 
