@@ -120,7 +120,6 @@ namespace LibClient
                     data = Encoding.ASCII.GetString(buffer, 0, b);
                     Message mObject = JsonSerializer.Deserialize<Message>(data);
                     MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-
                     switch (mType)
                     {
                         case MessageType.Welcome:
@@ -131,7 +130,6 @@ namespace LibClient
                             Console.WriteLine("Data from server: " + mObject.Content.ToString());
                             sock.Close();
                             break;
-                        
                         default:
                             break;
                     }

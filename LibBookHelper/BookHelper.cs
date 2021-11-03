@@ -59,15 +59,17 @@ namespace BookHelper
         }
 
         public string getOuputByName(string name) {
+            Output n = new Output();
+
             foreach (BookData item in output) {
                 if (item.Title == name) {
-                    newOutput.BookName = item.Title;
-                    newOutput.Status = item.Status;
-                    newOutput.BorrowerName = item.BorrowedBy;
+                    n.BookName = item.Title;
+                    n.Status = item.Status;
+                    n.BorrowerName = item.BorrowedBy;
                 }
             }
 
-            return newOutput.ToString();
+            return JsonSerializer.Serialize(n);
         }
     }
     
@@ -115,6 +117,8 @@ namespace BookHelper
                 sock = new Socket(AddressFamily.InterNetwork,
                 SocketType.Dgram, ProtocolType.Udp);
                 sock.Bind(localEndpoint);
+
+                Console.WriteLine("HELLO SERVER");
                 while (MsgCounter < this.settings.ServerListeningQueue)
                 {
                     Console.WriteLine("\n Waiting for the next server message..");
@@ -130,9 +134,8 @@ namespace BookHelper
                     {
                         case MessageType.BookInquiryReply:
                             Console.WriteLine("A message received from server Message: " + mType);
-
-                            msg = createMessage(bHelper.getOuputByName(mObject.Content.ToString()), MessageType.BookInquiryReply);
-                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
+                            string content = bHelper.getOuputByName(mObject.Content.ToString());
+                            msg = createMessage(content, MessageType.BookInquiryReply);
                             break;
                     }
 
