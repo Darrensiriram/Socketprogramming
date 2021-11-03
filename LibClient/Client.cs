@@ -115,27 +115,25 @@ namespace LibClient
                 sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
                 while (true)
                 {
-
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
                     data = Encoding.ASCII.GetString(buffer, 0, b);
                     Message mObject = JsonSerializer.Deserialize<Message>(data);
                     MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
+                    Console.WriteLine("****************");
+                    Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
                     switch (mType)
                     {
                         case MessageType.Welcome:
-                            Console.WriteLine("From server Message: " + mType);
                             msg = createMessage(this.bookName, MessageType.BookInquiry);
                             break;
                         case MessageType.BookInquiryReply:
-                            Console.WriteLine("Data from server: " + mObject.Content.ToString());
-                            sock.Close();
-                            break;
-                        default:
+                            Output o = JsonSerializer.Deserialize<Output>(mObject.Content.ToString());
                             break;
                     }
 
                     sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
                 }
+                sock.Close();
             }
             catch
             {

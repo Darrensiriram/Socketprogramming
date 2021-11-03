@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -19,7 +20,45 @@ namespace UserHelper
         public string UserHelperIPAddress { get; set; }
         public int ServerListeningQueue { get; set; }
     }
-     
+
+
+    public class UserOutput
+    {
+        public string json = @"../../../Users.json";
+        public List<UserData> output;
+
+        public UserOutput()
+        {
+            try
+            {
+                string file = File.ReadAllText(json);
+
+                output = JsonSerializer.Deserialize<List<UserData>>(file);
+
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine("[Client Exception] {0}", e.Message);
+            }
+        }
+
+        public string getOuputById(string user_id)
+        {
+            UserData n = new UserData();
+
+            foreach (UserData item in output)
+            {
+                if (item.User_id == user_id)
+                {
+                    n = item;
+                }
+            }
+
+            return JsonSerializer.Serialize(n);
+        }
+    }
+
+
     // Note: Complete the implementation of this class. You can adjust the structure of this class.
     public class SequentialHelper
     {
@@ -53,53 +92,53 @@ namespace UserHelper
             return Encoding.ASCII.GetBytes(JsonSerializer.Serialize(m));
         }
 
-        public void ServerConnection()
+
+        public void start()
         {
+            UserOutput uHelper = new UserOutput();
+
             byte[] buffer = new byte[1000];
             byte[] msg = new byte[1000];
             Socket sock;
             int MsgCounter = 0;
             int b = 0;
             string data;
-            IPEndPoint LEP = new IPEndPoint(this.localIpAddress, this.settings.UserHelperPortNumber);
+            IPEndPoint localEndpoint = new IPEndPoint(this.localIpAddress, this.settings.UserHelperPortNumber);
             IPEndPoint sender = new IPEndPoint(this.ServerIPAddress, this.settings.ServerPortNumber);
-            EndPoint remoteEp = (EndPoint) sender;
-
+            EndPoint remoteEP = (EndPoint)sender;
             try
             {
-                sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                sock.Bind(LEP);
-                while (MsgCounter < this.settings.ServerListeningQueue)
+                sock = new Socket(AddressFamily.InterNetwork,
+                SocketType.Dgram, ProtocolType.Udp);
+                sock.Bind(localEndpoint);
+                Console.WriteLine("Userhelper: waiting for messages from server");
+                while (true)
                 {
-                    b = sock.ReceiveFrom(buffer, ref remoteEp);
+
+                    b = sock.ReceiveFrom(buffer, ref remoteEP);
                     data = Encoding.ASCII.GetString(buffer, 0, b);
                     Message mObject = JsonSerializer.Deserialize<Message>(data);
-                    MessageType mType = (MessageType) Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-
+                    MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
+                    Console.WriteLine("****************");
+                    Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
                     switch (mType)
                     {
                         case MessageType.UserInquiryReply:
-                            Console.WriteLine("Yeey ik ben bij de user gekomen");
-                            msg = createMessage(mObject.Content.ToString(), MessageType.UserInquiryReply);
-                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEp);
+                            string content = uHelper.getOuputById(mObject.Content.ToString());
+                            msg = createMessage(content, MessageType.UserInquiryReply);
                             break;
                     }
-                    // not sure if needed.... 
-                    // sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEp);
+
+                    sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
+
                     MsgCounter++;
                 }
                 sock.Close();
             }
-            catch 
+            catch
             {
                 Console.WriteLine("\n Socket Error. Terminating");
             }
-
-        }
-
-        public void start()
-        {
-            ServerConnection();            
         }
     }
 }

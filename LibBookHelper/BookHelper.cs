@@ -58,18 +58,19 @@ namespace BookHelper
             }  
         }
 
-        public string getOuputByName(string name) {
-            Output n = new Output();
+        public BookData getOuputByName(string name) {
+            BookData n = new BookData();
+            n.Title = name;
+            n.Status = "NotFound";
+
 
             foreach (BookData item in output) {
                 if (item.Title == name) {
-                    n.BookName = item.Title;
-                    n.Status = item.Status;
-                    n.BorrowerName = item.BorrowedBy;
+                    n = item;
                 }
             }
 
-            return JsonSerializer.Serialize(n);
+            return n;
         }
     }
     
@@ -117,25 +118,27 @@ namespace BookHelper
                 sock = new Socket(AddressFamily.InterNetwork,
                 SocketType.Dgram, ProtocolType.Udp);
                 sock.Bind(localEndpoint);
-
-                Console.WriteLine("HELLO SERVER");
-                while (MsgCounter < this.settings.ServerListeningQueue)
+                Console.WriteLine("BookHelper: Waiting for messages from server");
+                while (true)
                 {
-                    Console.WriteLine("\n Waiting for the next server message..");
-                    //debugging purpose
-                    Console.WriteLine(this.settings.ServerListeningQueue.ToString());
 
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
                     data = Encoding.ASCII.GetString(buffer, 0, b);
                     Message mObject = JsonSerializer.Deserialize<Message>(data);
                     MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-
+                    Console.WriteLine("****************");
+                    Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
                     switch (mType)
                     {
                         case MessageType.BookInquiryReply:
-                            Console.WriteLine("A message received from server Message: " + mType);
-                            string content = bHelper.getOuputByName(mObject.Content.ToString());
-                            msg = createMessage(content, MessageType.BookInquiryReply);
+                            BookData content = bHelper.getOuputByName(mObject.Content.ToString());
+                            MessageType mt = MessageType.BookInquiryReply;
+
+                            if (content.Status == "NotFound") {
+                                mt = MessageType.NotFound;
+                            }
+
+                            msg = createMessage(JsonSerializer.Serialize(content), mt);
                             break;
                     }
 

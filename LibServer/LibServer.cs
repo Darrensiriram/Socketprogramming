@@ -1,4 +1,5 @@
-﻿using LibData;
+﻿using LibClient;
+using LibData;
 using System;
 using System.IO;
 using System.Net;
@@ -62,19 +63,14 @@ namespace LibServer
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.ServerPortNumber);
             EndPoint remoteEP = (EndPoint)sender;
             
-            IPEndPoint senderBook = new IPEndPoint(this.bookHelperIpAddress, this.settings.BookHelperPortNumber);
-            EndPoint remoteEPBook = (EndPoint)senderBook;
-
-            IPEndPoint senderUser = new IPEndPoint(this.userHelperIpAddress, this.settings.UserHelperPortNumber);
-            EndPoint remoteEPUser = (EndPoint) senderUser;
             try
             {
                 sock = new Socket(AddressFamily.InterNetwork,
                 SocketType.Dgram, ProtocolType.Udp);
                 sock.Bind(localEndpoint);
-                while (MsgCounter < this.settings.ServerListeningQueue)
+                Console.WriteLine("\n Waiting for the next client message..");
+                while (true)
                 {
-                    Console.WriteLine("\n Waiting for the next client message..");
                     //debugging purpose
 
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
@@ -82,27 +78,34 @@ namespace LibServer
                     Message mObject = JsonSerializer.Deserialize<Message>(data);
                     MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
 
+                    Console.WriteLine("****************");
+                    Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
                     switch (mType)
                     {
                         case MessageType.Hello:
-                            Console.WriteLine("A message received. Message: " + mType);
                             msg = createMessage("", MessageType.Welcome);
                             sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                             break;
                         case MessageType.BookInquiry:
-                            //TODO SEND MESSAGE TO BOOKHELPER
-                            
-                            msg = createMessage(LibBookSender(mObject.Content.ToString()), MessageType.BookInquiryReply);
-                            break;
-                        case MessageType.UserInquiry:
-                            msg = createMessage(mObject.Content.ToString(), MessageType.UserInquiryReply);
-                            break;
+                            BookData bData = JsonSerializer.Deserialize<BookData>(LibBookSender(mObject.Content.ToString()));
 
+                            Output newOutput = new Output();
+                            newOutput.Status = bData.Status;
+                            newOutput.BookName = bData.Title;
+                            MessageType mt = MessageType.BookInquiryReply;
+                            if (bData.Status == "Borrowed") {
+                                UserData uData = JsonSerializer.Deserialize<UserData>(LibUserSender(bData.BorrowedBy.ToString()));
+                                newOutput.BorrowerEmail = uData.Email;
+                                newOutput.BorrowerName = uData.Name;
+                            }
+                            if (bData.Status == "NotFound") {
+                                mt = MessageType.NotFound;
+                            }
+                            msg = createMessage(JsonSerializer.Serialize(newOutput), mt);
+                            break;
                     }
-
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                    
-                    MsgCounter++;
                 }
                 sock.Close();
             }
@@ -112,6 +115,42 @@ namespace LibServer
             }
         }
 
+        public string LibUserSender(string content)
+        {
+            byte[] buffer = new byte[1000];
+            byte[] msg = new byte[1000];
+            Socket sock;
+            int b = 0;
+            string data;
+            IPEndPoint ServerEndpoint = new IPEndPoint(this.userHelperIpAddress, this.settings.UserHelperPortNumber);
+
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.UserHelperPortNumber);
+            EndPoint remoteEP = (EndPoint)sender;
+
+            try
+            {
+                sock = new Socket(AddressFamily.InterNetwork,
+                SocketType.Dgram, ProtocolType.Udp);
+
+                msg = createMessage(content, MessageType.UserInquiry);
+                sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
+                
+                b = sock.ReceiveFrom(buffer, ref remoteEP);
+                data = Encoding.ASCII.GetString(buffer, 0, b);
+                Message mObject = JsonSerializer.Deserialize<Message>(data);
+                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
+
+                content = mObject.Content.ToString();
+                   
+                sock.Close();
+            }
+            catch
+            {
+                Console.WriteLine("\n Socket Error. Terminating");
+            }
+
+            return content;
+        }
         public string LibBookSender(string content)
         {
             byte[] buffer = new byte[1000];
@@ -136,9 +175,7 @@ namespace LibServer
                 data = Encoding.ASCII.GetString(buffer, 0, b);
                 Message mObject = JsonSerializer.Deserialize<Message>(data);
                 MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-                Console.WriteLine("HELLO");
-                Console.WriteLine(mType);
-                Console.WriteLine(mObject.Content.ToString());
+
                 content = mObject.Content.ToString();
                    
                 sock.Close();
