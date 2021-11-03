@@ -39,8 +39,9 @@ namespace BookHelper
 
     public class BookOutput
     {
-        public string json = @"../../../../Books.json";
-        public List<Output> output;
+        public string json = @"../../../Books.json";
+        public List<BookData> output;
+        public Output newOutput;
 
         public BookOutput()
         {
@@ -48,7 +49,7 @@ namespace BookHelper
             {
                 string file = File.ReadAllText(json);
 
-                output = JsonSerializer.Deserialize<List<Output>>(file);
+                output = JsonSerializer.Deserialize<List<BookData>>(file);
 
             }
             catch (Exception e)
@@ -58,15 +59,15 @@ namespace BookHelper
         }
 
         public string getOuputByName(string name) {
-            Output o = new Output();
-
-            foreach (Output item in output) {
-                if (item.BookName == name) {
-                    o = item;
+            foreach (BookData item in output) {
+                if (item.Title == name) {
+                    newOutput.BookName = item.Title;
+                    newOutput.Status = item.Status;
+                    newOutput.BorrowerName = item.BorrowedBy;
                 }
             }
 
-            return o.ToString();
+            return newOutput.ToString();
         }
     }
     
@@ -129,7 +130,7 @@ namespace BookHelper
                     {
                         case MessageType.BookInquiryReply:
                             Console.WriteLine("A message received from server Message: " + mType);
-                           
+
                             msg = createMessage(bHelper.getOuputByName(mObject.Content.ToString()), MessageType.BookInquiryReply);
                             sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                             break;
