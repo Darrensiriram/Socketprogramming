@@ -1,11 +1,11 @@
-﻿using LibClient;
-using LibData;
+﻿using LibData;
 using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using BookHelper;
 
 namespace LibServer
 {
@@ -34,7 +34,7 @@ namespace LibServer
 
         public SequentialServer()
         {
-            //todo: implement the body. Add extra fields and methods to the class if it is needed
+            
             try
             {
                 string configContent = File.ReadAllText(configFile);
@@ -72,7 +72,6 @@ namespace LibServer
                 while (true)
                 {
                     //debugging purpose
-
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
                     data = Encoding.ASCII.GetString(buffer, 0, b);
                     Message mObject = JsonSerializer.Deserialize<Message>(data);
@@ -88,12 +87,12 @@ namespace LibServer
                             break;
                         case MessageType.BookInquiry:
                             BookData bData = JsonSerializer.Deserialize<BookData>(LibBookSender(mObject.Content.ToString()));
-
                             Output newOutput = new Output();
                             newOutput.Status = bData.Status;
                             newOutput.BookName = bData.Title;
                             MessageType mt = MessageType.BookInquiryReply;
-                            if (bData.Status == "Borrowed") {
+                            Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
+                            if (newOutput.Status == "Borrowed") {
                                 UserData uData = JsonSerializer.Deserialize<UserData>(LibUserSender(bData.BorrowedBy.ToString()));
                                 newOutput.BorrowerEmail = uData.Email;
                                 newOutput.BorrowerName = uData.Name;
@@ -105,6 +104,7 @@ namespace LibServer
                             break;
                     }
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
+                    break;
                    
                 }
                 sock.Close();

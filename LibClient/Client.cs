@@ -60,10 +60,6 @@ namespace LibClient
 
         public Setting settings;
         //public string configFile = @"../../../../ClientServerConfig.json"; // for debugging
-
-        // todo: add extra fields here in case needed 
-
-
         /// <summary>
         ///     Initializes the client based on the given parameters and seeting file.
         /// </summary>
@@ -71,7 +67,7 @@ namespace LibClient
         /// <param name="bookName">name of the book to be requested from the server, provided by the simulator</param>
         public SimpleClient(int id, string bookName)
         {
-            //todo: extend the body if needed.
+            
             this.bookName = bookName;
             client_id = "Client " + id;
             result = new Output();
@@ -93,7 +89,7 @@ namespace LibClient
 
         public Output start()
         {
-            // todo: implement the body to communicate with the server and requests the book. Return the result as an Output object.
+            
             // Adding extra methods to the class is permitted. The signature of this method must not change.
             byte[] buffer = new byte[1000];
 

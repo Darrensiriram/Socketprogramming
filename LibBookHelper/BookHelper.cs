@@ -27,13 +27,9 @@ namespace BookHelper
         public string BookName { get; set; } // the name of the book to be reqyested
         public string Status { get; set; } // final status received from the server
 
-        public string
-            BorrowerName
-        { get; set; } // the name of the borrower in case the status is borrowed, otherwise null
+        public string BorrowerName{ get; set; } // the name of the borrower in case the status is borrowed, otherwise null
 
-        public string
-            BorrowerEmail
-        { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
+        public string BorrowerEmail{ get; set; } // the email of the borrower in case the status is borrowed, otherwise null
         
     }
 
@@ -63,7 +59,6 @@ namespace BookHelper
             n.Title = name;
             n.Status = "NotFound";
 
-
             foreach (BookData item in output) {
                 if (item.Title == name) {
                     n = item;
@@ -84,7 +79,7 @@ namespace BookHelper
 
         public SequentialHelper()
         {
-            //todo: implement the body. Add extra fields and methods to the class if needed
+            
             try
             {
                 string configContent = File.ReadAllText(configFile);
@@ -101,7 +96,7 @@ namespace BookHelper
         
         public void start()
         {
-            //todo: implement the body. Add extra fields and methods to the class if needed\
+            
             BookOutput bHelper = new BookOutput();
 
             byte[] buffer = new byte[1000];
@@ -143,7 +138,7 @@ namespace BookHelper
                     }
 
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-
+                    break;
                     MsgCounter++;
                 }
                 sock.Close();

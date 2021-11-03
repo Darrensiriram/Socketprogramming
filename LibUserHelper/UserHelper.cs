@@ -42,19 +42,18 @@ namespace UserHelper
             }
         }
 
-        public string getOuputById(string user_id)
+        public UserData getOutputById(string user_id)
         {
-            UserData n = new UserData();
-
+            UserData x = new UserData();
+            x.User_id = user_id;
             foreach (UserData item in output)
             {
                 if (item.User_id == user_id)
                 {
-                    n = item;
+                    x = item;
                 }
             }
-
-            return JsonSerializer.Serialize(n);
+            return x;
         }
     }
 
@@ -69,7 +68,7 @@ namespace UserHelper
 
         public SequentialHelper()
         {
-            //todo: implement the body. Add extra fields and methods to the class if needed
+            
             try
             {
                 string configContent = File.ReadAllText(configFile);
@@ -82,7 +81,7 @@ namespace UserHelper
                 Console.Out.WriteLine("[Client Exception] {0}", e.Message);
             }
         }
-        //TODO: userinfo extracte van de json file! 
+       
         public byte[] createMessage(string content, MessageType type)
         {
             Message m = new Message();
@@ -124,13 +123,14 @@ namespace UserHelper
                     switch (mType)
                     {
                         case MessageType.UserInquiryReply:
-                            string content = uHelper.getOuputById(mObject.Content.ToString());
-                            msg = createMessage(content, MessageType.UserInquiryReply);
+                            UserData content = uHelper.getOutputById(mObject.Content.ToString());
+                           // string content = uHelper.getOuputById(mObject.Content.ToString());
+                            msg = createMessage(JsonSerializer.Serialize(content), MessageType.UserInquiryReply);
                             break;
                     }
 
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-
+                    break;
                     MsgCounter++;
                 }
                 sock.Close();
