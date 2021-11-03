@@ -64,6 +64,9 @@ namespace LibServer
             
             IPEndPoint senderBook = new IPEndPoint(this.bookHelperIpAddress, this.settings.BookHelperPortNumber);
             EndPoint remoteEPBook = (EndPoint)senderBook;
+
+            IPEndPoint senderUser = new IPEndPoint(this.userHelperIpAddress, this.settings.UserHelperPortNumber);
+            EndPoint remoteEPUser = (EndPoint) senderUser;
             try
             {
                 sock = new Socket(AddressFamily.InterNetwork,
@@ -96,6 +99,9 @@ namespace LibServer
                             break;
                         case MessageType.BookInquiryReply:
                             Console.WriteLine(mObject.Content.ToString());
+                            break;
+                        case MessageType.UserInquiry:
+                            msg = createMessage(mObject.Content.ToString(), MessageType.UserInquiryReply);
                             break;
 
                     }
