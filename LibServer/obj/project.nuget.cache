@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zvk4X6+ALjE+qBx0dKaArx0HYK26/x2mfHrdd9kfMusPjopzfwX3fH9KL5JDlTozJX67zW77ULuctY9ix0JW0w==",
+  "dgSpecHash": "poilWALppFSu5wVCaxjh9OXu6POApakMF6GninvK7MSa0I6Sd8tD8ilHvXoj48GCaTPIj6LSAcBwYv0w5RECqg==",
   "success": true,
-  "projectFilePath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj",
+  "projectFilePath": "C:\\Users\\thijs\\Source\\Repos\\Socketprogramming\\LibServer\\LibServer.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
