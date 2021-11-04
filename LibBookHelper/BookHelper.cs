@@ -128,11 +128,9 @@ namespace BookHelper
                         case MessageType.BookInquiryReply:
                             BookData content = bHelper.getOuputByName(mObject.Content.ToString());
                             MessageType mt = MessageType.BookInquiryReply;
-
                             if (content.Status == "NotFound") {
                                 mt = MessageType.NotFound;
                             }
-
                             msg = createMessage(JsonSerializer.Serialize(content), mt);
                             break;
                     }

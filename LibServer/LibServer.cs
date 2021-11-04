@@ -91,7 +91,6 @@ namespace LibServer
                             newOutput.Status = bData.Status;
                             newOutput.BookName = bData.Title;
                             MessageType mt = MessageType.BookInquiryReply;
-                            Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
                             if (newOutput.Status == "Borrowed") {
                                 UserData uData = JsonSerializer.Deserialize<UserData>(LibUserSender(bData.BorrowedBy.ToString()));
                                 newOutput.BorrowerEmail = uData.Email;
@@ -101,6 +100,10 @@ namespace LibServer
                                 mt = MessageType.NotFound;
                             }
                             msg = createMessage(JsonSerializer.Serialize(newOutput), mt);
+                            break;
+                        case MessageType.UserInquiry:
+                            //forward message naar userhelper server
+                            msg = createMessage("", MessageType.UserInquiryReply);
                             break;
                     }
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);

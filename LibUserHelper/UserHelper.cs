@@ -124,7 +124,6 @@ namespace UserHelper
                     {
                         case MessageType.UserInquiryReply:
                             UserData content = uHelper.getOutputById(mObject.Content.ToString());
-                           // string content = uHelper.getOuputById(mObject.Content.ToString());
                             msg = createMessage(JsonSerializer.Serialize(content), MessageType.UserInquiryReply);
                             break;
                     }

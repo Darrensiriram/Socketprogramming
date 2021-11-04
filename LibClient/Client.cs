@@ -13,7 +13,8 @@ using System.Text.Json.Serialization;
 namespace LibClient
 {
     // Note: Do not change this class 
-    public class Setting
+    public class 
+        Setting
     {
         public int ServerPortNumber { get; set; }
         public int BookHelperPortNumber { get; set; }
@@ -30,14 +31,8 @@ namespace LibClient
         public string Client_id { get; set; } // the id of the client that requests the book
         public string BookName { get; set; } // the name of the book to be reqyested
         public string Status { get; set; } // final status received from the server
-
-        public string
-            BorrowerName
-        { get; set; } // the name of the borrower in case the status is borrowed, otherwise null
-
-        public string
-            BorrowerEmail
-        { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
+        public string BorrowerName{ get; set; } // the name of the borrower in case the status is borrowed, otherwise null
+        public string BorrowerEmail { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
         
     }
 
@@ -46,6 +41,7 @@ namespace LibClient
     {
         private string bookName;
         public string client_id;
+        
 
         public Socket clientSocket;
 
@@ -67,6 +63,7 @@ namespace LibClient
         /// <param name="bookName">name of the book to be requested from the server, provided by the simulator</param>
         public SimpleClient(int id, string bookName)
         {
+            
             
             this.bookName = bookName;
             client_id = "Client " + id;
@@ -124,6 +121,10 @@ namespace LibClient
                             break;
                         case MessageType.BookInquiryReply:
                             Output o = JsonSerializer.Deserialize<Output>(mObject.Content.ToString());
+                            break;
+                        case MessageType.UserInquiry:
+                            UserData udata = JsonSerializer.Deserialize<UserData>(mObject.Content.ToString());
+                            msg = createMessage(udata.User_id, MessageType.UserInquiry);
                             break;
                     }
 
