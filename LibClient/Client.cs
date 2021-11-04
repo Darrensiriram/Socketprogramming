@@ -106,7 +106,8 @@ namespace LibClient
                 //send hello standaard
                 msg = createMessage(this.client_id, MessageType.Hello);
                 sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
-                while (true)
+                bool run = true;
+                while (run)
                 {
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
                     data = Encoding.ASCII.GetString(buffer, 0, b);
@@ -117,7 +118,15 @@ namespace LibClient
                     switch (mType)
                     {
                         case MessageType.Welcome:
-                            msg = createMessage(this.bookName, MessageType.BookInquiry);
+                            if (client_id == "Client -1")
+                            {
+                                msg = createMessage("val dood", MessageType.EndCommunication);
+                                run = false;
+                            }
+                            else
+                            {
+                                msg = createMessage(this.bookName, MessageType.BookInquiry);
+                            }
                             break;
                         case MessageType.BookInquiryReply:
                             Output o = JsonSerializer.Deserialize<Output>(mObject.Content.ToString());

@@ -114,7 +114,8 @@ namespace BookHelper
                 SocketType.Dgram, ProtocolType.Udp);
                 sock.Bind(localEndpoint);
                 Console.WriteLine("BookHelper: Waiting for messages from server");
-                while (true)
+                bool run = true;
+                while (run)
                 {
 
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
@@ -132,12 +133,12 @@ namespace BookHelper
                                 mt = MessageType.NotFound;
                             }
                             msg = createMessage(JsonSerializer.Serialize(content), mt);
+                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
+                            break;
+                        case MessageType.EndCommunication:
+                            run = false;
                             break;
                     }
-
-                    sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-                    break;
-                    MsgCounter++;
                 }
                 sock.Close();
             }

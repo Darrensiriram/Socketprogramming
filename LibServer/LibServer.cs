@@ -69,7 +69,8 @@ namespace LibServer
                 SocketType.Dgram, ProtocolType.Udp);
                 sock.Bind(localEndpoint);
                 Console.WriteLine("\n Waiting for the next client message..");
-                while (true)
+                bool run = true;
+                while (run)
                 {
                     //debugging purpose
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
@@ -86,13 +87,13 @@ namespace LibServer
                             sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                             break;
                         case MessageType.BookInquiry:
-                            BookData bData = JsonSerializer.Deserialize<BookData>(LibBookSender(mObject.Content.ToString()));
+                            BookData bData = JsonSerializer.Deserialize<BookData>(LibBookSender(mObject.Content.ToString(), MessageType.BookInquiryReply));
                             Output newOutput = new Output();
                             newOutput.Status = bData.Status;
                             newOutput.BookName = bData.Title;
                             MessageType mt = MessageType.BookInquiryReply;
                             if (newOutput.Status == "Borrowed") {
-                                UserData uData = JsonSerializer.Deserialize<UserData>(LibUserSender(bData.BorrowedBy.ToString()));
+                                UserData uData = JsonSerializer.Deserialize<UserData>(LibUserSender(bData.BorrowedBy.ToString(), MessageType.UserInquiry));
                                 newOutput.BorrowerEmail = uData.Email;
                                 newOutput.BorrowerName = uData.Name;
                             }
@@ -101,6 +102,12 @@ namespace LibServer
                             }
                             msg = createMessage(JsonSerializer.Serialize(newOutput), mt);
                             break;
+                        case MessageType.EndCommunication:
+                            LibBookSender("val dood", MessageType.EndCommunication);
+                            LibUserSender("val dood", MessageType.EndCommunication);
+                            run = false;
+                            return;
+                           
                     }
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                     break;
@@ -114,7 +121,7 @@ namespace LibServer
             }
         }
 
-        public string LibUserSender(string content)
+        public string LibUserSender(string content, MessageType m)
         {
             byte[] buffer = new byte[1000];
             byte[] msg = new byte[1000];
@@ -131,7 +138,7 @@ namespace LibServer
                 sock = new Socket(AddressFamily.InterNetwork,
                 SocketType.Dgram, ProtocolType.Udp);
 
-                msg = createMessage(content, MessageType.UserInquiry);
+                msg = createMessage(content, m);
                 sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
                 
                 b = sock.ReceiveFrom(buffer, ref remoteEP);
@@ -150,7 +157,7 @@ namespace LibServer
 
             return content;
         }
-        public string LibBookSender(string content)
+        public string LibBookSender(string content, MessageType m)
         {
             byte[] buffer = new byte[1000];
             byte[] msg = new byte[1000];
@@ -167,7 +174,7 @@ namespace LibServer
                 sock = new Socket(AddressFamily.InterNetwork,
                 SocketType.Dgram, ProtocolType.Udp);
 
-                msg = createMessage(content, MessageType.BookInquiryReply);
+                msg = createMessage(content, m);
                 sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
                 
                 b = sock.ReceiveFrom(buffer, ref remoteEP);

@@ -111,7 +111,8 @@ namespace UserHelper
                 SocketType.Dgram, ProtocolType.Udp);
                 sock.Bind(localEndpoint);
                 Console.WriteLine("Userhelper: waiting for messages from server");
-                while (true)
+                bool run = true;
+                while (run)
                 {
 
                     b = sock.ReceiveFrom(buffer, ref remoteEP);
@@ -125,12 +126,12 @@ namespace UserHelper
                         case MessageType.UserInquiryReply:
                             UserData content = uHelper.getOutputById(mObject.Content.ToString());
                             msg = createMessage(JsonSerializer.Serialize(content), MessageType.UserInquiryReply);
+                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
+                            break;
+                        case MessageType.EndCommunication:
+                            run = false;
                             break;
                     }
-
-                    sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-                    break;
-                    MsgCounter++;
                 }
                 sock.Close();
             }
