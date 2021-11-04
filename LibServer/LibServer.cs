@@ -101,10 +101,6 @@ namespace LibServer
                             }
                             msg = createMessage(JsonSerializer.Serialize(newOutput), mt);
                             break;
-                        case MessageType.UserInquiry:
-                            //forward message naar userhelper server
-                            msg = createMessage("", MessageType.UserInquiryReply);
-                            break;
                     }
                     sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
                     break;
