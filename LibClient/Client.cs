@@ -1,161 +1,186 @@
-﻿using LibData;
+﻿using System.Linq;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using System.Net;
 using System.Text.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Threading;
+// using LibData;
+using Microsoft.Extensions.Configuration;
 
 namespace LibClient
 {
-    // Note: Do not change this class 
-    public class 
-        Setting
+    public struct Setting
     {
         public int ServerPortNumber { get; set; }
-        public int BookHelperPortNumber { get; set; }
-        public int UserHelperPortNumber { get; set; }
         public string ServerIPAddress { get; set; }
-        public string BookHelperIPAddress { get; set; }
-        public string UserHelperIPAddress { get; set; }
-        public int ServerListeningQueue { get; set; }
+
     }
 
-    // Note: Do not change this class 
     public class Output
     {
         public string Client_id { get; set; } // the id of the client that requests the book
         public string BookName { get; set; } // the name of the book to be reqyested
         public string Status { get; set; } // final status received from the server
-        public string BorrowerName{ get; set; } // the name of the borrower in case the status is borrowed, otherwise null
-        public string BorrowerEmail { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
-        
+        public string Error { get; set; } // True if errors received from the server
+        public string BorrowerName { get; set; } // the name of the borrower in case the status is borrowed, otherwise null
+        public string ReturnDate { get; set; } // the email of the borrower in case the status is borrowed, otherwise null
     }
 
-    // Note: Complete the implementation of this class. You can adjust the structure of this class.
-    public class SimpleClient
+    abstract class AbsSequentialClient
     {
-        private string bookName;
-        public string client_id;
-        
+        protected Setting settings;
 
+        /// <summary>
+        /// Report method can be used to print message to console in standaard formaat. 
+        /// It is not mandatory to use it, but highly recommended.
+        /// </summary>
+        /// <param name="type">For example: [Exception], [Error], [Info] etc</param>
+        /// <param name="msg"> In case of [Exception] the message of the exection can be passed. Same is valud for other types</param>
+
+        protected void report(string type, string msg)
+        {
+            // Console.Clear();
+            Console.Out.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>");
+            if (!String.IsNullOrEmpty(msg))
+            {
+                msg = msg.Replace(@"\u0022", " ");
+            }
+
+            Console.Out.WriteLine("[Client] {0} : {1}", type, msg);
+        }
+
+        /// <summary>
+        /// This methid loads required settings.
+        /// </summary>
+        protected void GetConfigurationValue()
+        {
+            settings = new Setting();
+            try
+            {
+                string path = AppDomain.CurrentDomain.BaseDirectory;
+                IConfiguration Config = new ConfigurationBuilder()
+                    .SetBasePath(Path.GetFullPath(Path.Combine(path, @"../../../../")))
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                settings.ServerIPAddress = Config.GetSection("ServerIPAddress").Value;
+                settings.ServerPortNumber = Int32.Parse(Config.GetSection("ServerPortNumber").Value);
+                // settings.ServerListeningQueue = Int32.Parse(Config.GetSection("ServerListeningQueue").Value);
+            }
+            catch (Exception e) { report("[Exception]", e.Message); }
+        }
+
+        protected abstract void createSocketAndConnect();
+        public abstract Output handleConntectionAndMessagesToServer();
+        protected abstract Message processMessage(Message message);
+
+    }
+
+
+
+
+    class SequentialClient : AbsSequentialClient
+    {
+        public Output result;
         public Socket clientSocket;
-
-        // all the required settings are provided in this file
-        public string configFile = @"../../../../ClientServerConfig.json";
-
+        public IPEndPoint serverEndPoint;
         public IPAddress ipAddress;
 
-        // some of the fields are defined. 
-        public Output result;
-        public IPEndPoint serverEndPoint;
+        public string client_id;
+        private string bookName;
 
-        public Setting settings;
-        //public string configFile = @"../../../../ClientServerConfig.json"; // for debugging
+        //This field is optional to use. 
+        private int delayTime;
         /// <summary>
-        ///     Initializes the client based on the given parameters and seeting file.
+        /// Initializes the client based on the given parameters and seeting file.
         /// </summary>
         /// <param name="id">id of the clients provided by the simulator</param>
         /// <param name="bookName">name of the book to be requested from the server, provided by the simulator</param>
-        public SimpleClient(int id, string bookName)
+        public SequentialClient(int id, string bookName)
         {
-            
-            
+            GetConfigurationValue();
+
+            // this.delayTime = 100;
             this.bookName = bookName;
-            client_id = "Client " + id;
-            result = new Output();
-            result.BookName = bookName;
-            result.Client_id = client_id;
-            // read JSON directly from a file
-            try
-            {
-                var configContent = File.ReadAllText(configFile);
-                settings = JsonSerializer.Deserialize<Setting>(configContent);
-                ipAddress = IPAddress.Parse(settings.ServerIPAddress);
-            }
-            catch (Exception e)
-            {
-                Console.Out.WriteLine("[Client Exception] {0}", e.Message);
-            }
+            this.client_id = "Client " + id.ToString();
+            this.result = new Output();
+            result.Client_id = this.client_id;
         }
 
 
-        public Output start()
+        /// <summary>
+        /// Optional method. Can be used for testing to delay the output time.
+        /// </summary>
+        public void delay()
         {
-            
-            // Adding extra methods to the class is permitted. The signature of this method must not change.
-            byte[] buffer = new byte[1000];
-
-            byte[] msg;
-            int b;
-            string data;
-            Socket sock;
-
-            IPEndPoint ServerEndpoint = new IPEndPoint(this.ipAddress, this.settings.ServerPortNumber);
-            IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-            EndPoint remoteEP = (EndPoint)sender;
-
-            try
+            int m = 10;
+            for (int i = 0; i <= m; i++)
             {
-                sock = new Socket(AddressFamily.InterNetwork,
-                SocketType.Dgram, ProtocolType.Udp);
-                //send hello standaard
-                msg = createMessage(this.client_id, MessageType.Hello);
-                sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
-                bool run = true;
-                while (run)
-                {
-                    b = sock.ReceiveFrom(buffer, ref remoteEP);
-                    data = Encoding.ASCII.GetString(buffer, 0, b);
-                    Message mObject = JsonSerializer.Deserialize<Message>(data);
-                    MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-                    Console.WriteLine("****************");
-                    Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
-                    switch (mType)
-                    {
-                        case MessageType.Welcome:
-                            if (client_id == "Client -1")
-                            {
-                                msg = createMessage("val dood", MessageType.EndCommunication);
-                                run = false;
-                            }
-                            else
-                            {
-                                msg = createMessage(this.bookName, MessageType.BookInquiry);
-                            }
-                            break;
-                        case MessageType.BookInquiryReply:
-                            Output o = JsonSerializer.Deserialize<Output>(mObject.Content.ToString());
-                            break;
-                        case MessageType.UserInquiry:
-                            UserData udata = JsonSerializer.Deserialize<UserData>(mObject.Content.ToString());
-                            msg = createMessage(udata.User_id, MessageType.UserInquiry);
-                            break;
-                    }
-
-                    sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
-                }
-                sock.Close();
+                Console.Out.Write("{0} .. ", i);
+                Thread.Sleep(delayTime);
             }
-            catch
-            {
-                Console.WriteLine("\n Socket Error. Terminating");
-            }
-
-            return result;
+            Console.WriteLine("\n");
         }
 
-        public byte[] createMessage(string content, MessageType type)
+        /// <summary>
+        /// Connect socket settings and connect to the helpers.
+        /// </summary>
+        protected override void createSocketAndConnect()
         {
-            Message m = new Message();
-            m.Content = content;
-            m.Type = type;
+             //todo: To meet the assignment requirement, finish the implementation of this method.
+  
+            // try
+            // {
+              
+            // }
+            // catch ()
+            // {
+             
+            // }
 
-            return Encoding.ASCII.GetBytes(JsonSerializer.Serialize(m));
+        }
+
+        /// <summary>
+        /// This method starts the socketserver after initializion and handles all the communications with the server. 
+        /// Note: The signature of this method must not change.
+        /// </summary>
+        /// <returns>The final result of the request that will be written to output file</returns>
+        public override Output handleConntectionAndMessagesToServer()
+        {
+            this.report("starting:", this.client_id + " ; " + this.bookName);
+            createSocketAndConnect();
+
+            //todo: To meet the assignment requirement, finish the implementation of this method.
+            // try
+            // {
+               
+               
+            // }
+            // catch () {  }
+
+            return this.result;
+        }
+
+       
+
+        /// <summary>
+        /// Process the messages of the server. Depending on the logic, type and content of a message the client may return different message values.
+        /// </summary>
+        /// <param name="message">Received message to be processed</param>
+        /// <returns>The message that needs to be sent back as the reply.</returns>
+        protected override Message processMessage(Message message)
+        {
+            Message processedMsgResult = new Message();
+            //todo: To meet the assignment requirement, finish the implementation of this method.
+            // try
+            // {
+               
+            // }
+            // catch () {  }
+
+            return processedMsgResult;
         }
     }
 }
+

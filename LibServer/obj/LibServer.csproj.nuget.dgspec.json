@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj": {}
+    "/Users/darren/RiderProjects/Socketprogramming/LibServer/LibServer.csproj": {}
   },
   "projects": {
-    "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj": {
+    "/Users/darren/RiderProjects/Socketprogramming/LibServer/LibServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj",
+        "projectUniqueName": "/Users/darren/RiderProjects/Socketprogramming/LibServer/LibServer.csproj",
         "projectName": "LibServer",
-        "projectPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj",
+        "projectPath": "/Users/darren/RiderProjects/Socketprogramming/LibServer/LibServer.csproj",
         "packagesPath": "/Users/darren/.nuget/packages/",
-        "outputPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/obj/",
+        "outputPath": "/Users/darren/RiderProjects/Socketprogramming/LibServer/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/darren/.nuget/NuGet/NuGet.Config"
@@ -37,6 +37,20 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -47,12 +61,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.osx-x64",
+              "version": "[5.0.13, 5.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[5.0.0, 5.0.0]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.401/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
         }
       }
     }

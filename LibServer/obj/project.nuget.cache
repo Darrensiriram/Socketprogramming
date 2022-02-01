@@ -1,8 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "zvk4X6+ALjE+qBx0dKaArx0HYK26/x2mfHrdd9kfMusPjopzfwX3fH9KL5JDlTozJX67zW77ULuctY9ix0JW0w==",
+  "dgSpecHash": "Bg8/6qAhuNUwQt5KlzFD53/7hqXJb4lWq+didiEeYGKIa1W4cVDiEH2G44msGKMHqA4BJGQ9UU9gNKNYCvyaSg==",
   "success": true,
-  "projectFilePath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibServer/LibServer.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/Users/darren/RiderProjects/Socketprogramming/LibServer/LibServer.csproj",
+  "expectedPackageFiles": [
+    "/Users/darren/.nuget/packages/microsoft.extensions.configuration/6.0.0/microsoft.extensions.configuration.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.extensions.configuration.abstractions/6.0.0/microsoft.extensions.configuration.abstractions.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.extensions.configuration.fileextensions/6.0.0/microsoft.extensions.configuration.fileextensions.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.extensions.configuration.json/6.0.0/microsoft.extensions.configuration.json.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.extensions.fileproviders.abstractions/6.0.0/microsoft.extensions.fileproviders.abstractions.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.extensions.fileproviders.physical/6.0.0/microsoft.extensions.fileproviders.physical.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.extensions.filesystemglobbing/6.0.0/microsoft.extensions.filesystemglobbing.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.extensions.primitives/6.0.0/microsoft.extensions.primitives.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/system.text.encodings.web/6.0.0/system.text.encodings.web.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/system.text.json/6.0.0/system.text.json.6.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.netcore.app.ref/5.0.0/microsoft.netcore.app.ref.5.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.aspnetcore.app.ref/5.0.0/microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.netcore.app.host.osx-x64/5.0.13/microsoft.netcore.app.host.osx-x64.5.0.13.nupkg.sha512"
+  ],
   "logs": []
 }

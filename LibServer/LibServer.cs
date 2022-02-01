@@ -1,211 +1,185 @@
-﻿using LibData;
-using System;
-using System.IO;
+﻿using System;
+using System.Text.Json;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
-using BookHelper;
+using System.IO;
+using System.Threading;
+using LibData;
+using Microsoft.Extensions.Configuration;
 
-namespace LibServer
+namespace LibServerSolution
 {
-    // Note: Do not change this class.
-    public class Setting
+    public struct Setting
     {
         public int ServerPortNumber { get; set; }
-        public int BookHelperPortNumber { get; set; }
-        public int UserHelperPortNumber { get; set; }
         public string ServerIPAddress { get; set; }
+        public int BookHelperPortNumber { get; set; }
         public string BookHelperIPAddress { get; set; }
-        public string UserHelperIPAddress { get; set; }
         public int ServerListeningQueue { get; set; }
     }
 
-    // Note: Complete the implementation of this class. You can adjust the structure of this class. 
-    public class SequentialServer
-    {
-        public Socket clientSocket;
-        public IPAddress localIpAddress;
-        public IPAddress bookHelperIpAddress;
-        public IPAddress userHelperIpAddress;
-        public Setting settings;
-        // all the required settings are provided in this file
-        public string configFile = @"../../../../ClientServerConfig.json";
 
-        public SequentialServer()
+    abstract class AbsSequentialServer
+    {
+        protected Setting settings;
+
+        /// <summary>
+        /// Report method can be used to print message to console in standaard formaat. 
+        /// It is not mandatory to use it, but highly recommended.
+        /// </summary>
+        /// <param name="type">For example: [Exception], [Error], [Info] etc</param>
+        /// <param name="msg"> In case of [Exception] the message of the exection can be passed. Same is valud for other types</param>
+
+        protected void report(string type, string msg)
         {
-            
+            // Console.Clear();
+            Console.Out.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>");
+            if (!String.IsNullOrEmpty(msg))
+            {
+                msg = msg.Replace(@"\u0022", " ");
+            }
+
+            Console.Out.WriteLine("[Server] {0} : {1}", type, msg);
+        }
+
+        /// <summary>
+        /// This methid loads required settings.
+        /// </summary>
+        protected void GetConfigurationValue()
+        {
+            settings = new Setting();
             try
             {
-                string configContent = File.ReadAllText(configFile);
-                this.settings = JsonSerializer.Deserialize<Setting>(configContent);
-                this.localIpAddress = IPAddress.Parse(settings.ServerIPAddress);
-                this.bookHelperIpAddress = IPAddress.Parse(settings.BookHelperIPAddress);
-                this.userHelperIpAddress = IPAddress.Parse(settings.UserHelperIPAddress);
+                string path = AppDomain.CurrentDomain.BaseDirectory;
+                IConfiguration Config = new ConfigurationBuilder()
+                    .SetBasePath(Path.GetFullPath(Path.Combine(path, @"../../../../")))
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                settings.ServerIPAddress = Config.GetSection("ServerIPAddress").Value;
+                settings.ServerPortNumber = Int32.Parse(Config.GetSection("ServerPortNumber").Value);
+                settings.BookHelperIPAddress = Config.GetSection("BookHelperIPAddress").Value;
+                settings.BookHelperPortNumber = Int32.Parse(Config.GetSection("BookHelperPortNumber").Value);
+                settings.ServerListeningQueue = Int32.Parse(Config.GetSection("ServerListeningQueue").Value);
+                // Console.WriteLine( settings.ServerIPAddress, settings.ServerPortNumber );
             }
-            catch (Exception e)
-            {
-                Console.Out.WriteLine("[Client Exception] {0}", e.Message);
-            }
+            catch (Exception e) { report("[Exception]", e.Message); }
+        }
+
+       
+        protected abstract void createSocketAndConnectHelpers();
+
+        public abstract void handelListening();
+
+        protected abstract Message processMessage(Message message);
+    
+        protected abstract Message requestDataFromHelpers(string msg);
+
+
+    }
+
+    class SequentialServer : AbsSequentialServer
+    {
+        // check all the required parameters for the server. How are they initialized? 
+        Socket serverSocket;
+        IPEndPoint listeningPoint;
+        Socket bookHelperSocket;
+
+        public SequentialServer() : base()
+        {
+            GetConfigurationValue();
         }
         
-
-        public void LibServerSender()
+        /// <summary>
+        /// Connect socket settings and connec
+        /// </summary>
+        protected override void createSocketAndConnectHelpers()
         {
-            byte[] buffer = new byte[1000];
-            byte[] msg = new byte[1000];
-            Socket sock;
-            int MsgCounter = 0;
-            int b = 0;
-            string data;
-            IPEndPoint localEndpoint = new IPEndPoint(this.localIpAddress, this.settings.ServerPortNumber);
+            // todo: To meet the assignment requirement, finish the implementation of this method.
+            // Extra Note: If failed to connect to helper. Server should retry 3 times.
+            // After the 3d attempt the server starts anyway and listen to incoming messages to clients
+           
+            // try
+            // {
+                 
+            // }
+            // catch ()
+            // {
 
-            IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.ServerPortNumber);
-            EndPoint remoteEP = (EndPoint)sender;
+            // }
+
+        }
+
+        /// <summary>
+        /// This method starts the socketserver after initializion and listents to incoming connections. 
+        /// It tries to connect to the book helpers. If it failes to connect to the helper. Server should retry 3 times. 
+        /// After the 3d attempt the server starts any way. It listen to clients and waits for incoming messages from clients
+        /// </summary>
+        public override void handelListening()
+        {
+            createSocketAndConnectHelpers();
+            //todo: To meet the assignment requirement, finish the implementation of this method.
+
+
+            // try
+            // {
+            // }
+            // catch (Exception e) {
+
+            // }
+           
+        }
+
+        /// <summary>
+        /// Process the message of the client. Depending on the logic and type and content values in a message it may call 
+        /// additional methods such as requestDataFromHelpers().
+        /// </summary>
+        /// <param name="message"></param>
+        protected override Message processMessage(Message message)
+        {
+            Message pmReply = new Message();
             
-            try
-            {
-                sock = new Socket(AddressFamily.InterNetwork,
-                SocketType.Dgram, ProtocolType.Udp);
-                sock.Bind(localEndpoint);
-                Console.WriteLine("\n Waiting for the next client message..");
-                bool run = true;
-                while (run)
-                {
-                    //debugging purpose
-                    b = sock.ReceiveFrom(buffer, ref remoteEP);
-                    data = Encoding.ASCII.GetString(buffer, 0, b);
-                    Message mObject = JsonSerializer.Deserialize<Message>(data);
-                    MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
+            //todo: To meet the assignment requirement, finish the implementation of this method .
+           
 
-                    Console.WriteLine("****************");
-                    Console.WriteLine("Message: " + mType + " Content: " + mObject.Content.ToString());
-                    switch (mType)
-                    {
-                        case MessageType.Hello:
-                            msg = createMessage("", MessageType.Welcome);
-                            sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-                            break;
-                        case MessageType.BookInquiry:
-                            BookData bData = JsonSerializer.Deserialize<BookData>(LibBookSender(mObject.Content.ToString(), MessageType.BookInquiryReply));
-                            Output newOutput = new Output();
-                            newOutput.Status = bData.Status;
-                            newOutput.BookName = bData.Title;
-                            MessageType mt = MessageType.BookInquiryReply;
-                            if (newOutput.Status == "Borrowed") {
-                                UserData uData = JsonSerializer.Deserialize<UserData>(LibUserSender(bData.BorrowedBy.ToString(), MessageType.UserInquiry));
-                                newOutput.BorrowerEmail = uData.Email;
-                                newOutput.BorrowerName = uData.Name;
-                            }
-                            if (bData.Status == "NotFound") {
-                                mt = MessageType.NotFound;
-                            }
-                            msg = createMessage(JsonSerializer.Serialize(newOutput), mt);
-                            break;
-                        case MessageType.EndCommunication:
-                            LibBookSender("val dood", MessageType.EndCommunication);
-                            LibUserSender("val dood", MessageType.EndCommunication);
-                            run = false;
-                            return;
-                           
-                    }
-                    sock.SendTo(msg, msg.Length, SocketFlags.None, remoteEP);
-                    break;
-                   
-                }
-                sock.Close();
-            }
-            catch
-            {
-                Console.WriteLine("\n Socket Error. Terminating");
-            }
+
+
+            return pmReply;
         }
 
-        public string LibUserSender(string content, MessageType m)
+        /// <summary>
+        /// When data is processed by the server, it may decide to send a message to a book helper to request more data. 
+        /// </summary>
+        /// <param name="content">Content may contain a different values depending on the message type. For example "a book title"</param>
+        /// <returns>Message</returns>
+        protected override Message requestDataFromHelpers(string content)
         {
-            byte[] buffer = new byte[1000];
-            byte[] msg = new byte[1000];
-            Socket sock;
-            int b = 0;
-            string data;
-            IPEndPoint ServerEndpoint = new IPEndPoint(this.userHelperIpAddress, this.settings.UserHelperPortNumber);
+            Message HelperReply = new Message();
+            //todo: To meet the assignment requirement, finish the implementation of this method .
 
-            IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.UserHelperPortNumber);
-            EndPoint remoteEP = (EndPoint)sender;
+            // try
+            // {
 
-            try
-            {
-                sock = new Socket(AddressFamily.InterNetwork,
-                SocketType.Dgram, ProtocolType.Udp);
+               
+            // }
+            // catch () { }
 
-                msg = createMessage(content, m);
-                sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
-                
-                b = sock.ReceiveFrom(buffer, ref remoteEP);
-                data = Encoding.ASCII.GetString(buffer, 0, b);
-                Message mObject = JsonSerializer.Deserialize<Message>(data);
-                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
+            return HelperReply;
 
-                content = mObject.Content.ToString();
-                   
-                sock.Close();
-            }
-            catch
-            {
-                Console.WriteLine("\n Socket Error. Terminating");
-            }
-
-            return content;
         }
-        public string LibBookSender(string content, MessageType m)
+
+        public void delay()
         {
-            byte[] buffer = new byte[1000];
-            byte[] msg = new byte[1000];
-            Socket sock;
-            int b = 0;
-            string data;
-            IPEndPoint ServerEndpoint = new IPEndPoint(this.bookHelperIpAddress, this.settings.BookHelperPortNumber);
-
-            IPEndPoint sender = new IPEndPoint(IPAddress.Any, this.settings.BookHelperPortNumber);
-            EndPoint remoteEP = (EndPoint)sender;
-
-            try
+            int m = 10;
+            for (int i = 0; i <= m; i++)
             {
-                sock = new Socket(AddressFamily.InterNetwork,
-                SocketType.Dgram, ProtocolType.Udp);
-
-                msg = createMessage(content, m);
-                sock.SendTo(msg, msg.Length, SocketFlags.None, ServerEndpoint);
-                
-                b = sock.ReceiveFrom(buffer, ref remoteEP);
-                data = Encoding.ASCII.GetString(buffer, 0, b);
-                Message mObject = JsonSerializer.Deserialize<Message>(data);
-                MessageType mType = (MessageType)Enum.Parse(typeof(MessageType), mObject.Type.ToString());
-
-                content = mObject.Content.ToString();
-                   
-                sock.Close();
+                Console.Out.Write("{0} .. ", i);
+                Thread.Sleep(200);
             }
-            catch
-            {
-                Console.WriteLine("\n Socket Error. Terminating");
-            }
-
-            return content;
+            Console.WriteLine("\n");
+            //report("round:","next to start");
         }
 
-        public void start()
-        {
-            
-            LibServerSender();
-        }
-        public byte[] createMessage(string content, MessageType type)
-        {
-            Message m = new Message();
-            m.Content = content;
-            m.Type = type;
-
-            return Encoding.ASCII.GetBytes(JsonSerializer.Serialize(m));
-        }
     }
 }
+

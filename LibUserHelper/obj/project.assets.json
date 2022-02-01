@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibUserHelper/UserHelper.csproj",
+      "projectUniqueName": "/Users/darren/RiderProjects/Socketprogramming/LibUserHelper/UserHelper.csproj",
       "projectName": "UserHelper",
-      "projectPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibUserHelper/UserHelper.csproj",
+      "projectPath": "/Users/darren/RiderProjects/Socketprogramming/LibUserHelper/UserHelper.csproj",
       "packagesPath": "/Users/darren/.nuget/packages/",
-      "outputPath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibUserHelper/obj/",
+      "outputPath": "/Users/darren/RiderProjects/Socketprogramming/LibUserHelper/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/darren/.nuget/NuGet/NuGet.Config"
@@ -53,12 +53,26 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[5.0.0, 5.0.0]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.osx-x64",
+            "version": "[5.0.13, 5.0.13]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[5.0.0, 5.0.0]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.401/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
       }
     }
   }

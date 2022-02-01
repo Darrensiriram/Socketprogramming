@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "qdF0sCJyPMGGfWoxsCbZjWDSH5i6z4JRtb5dtUosyrIus1CYrNVvmeqrQKigyRGg0D4NcfSV+q7wZb9twuUxRA==",
+  "dgSpecHash": "A0sFfkwllX8dj0Xq18D96epy090EvzUuG5Zb13Q/NkI+4di1Q5A8SAtGaMcWNRkb7AkiUzJqDKpX2Iu6o3wr/Q==",
   "success": true,
-  "projectFilePath": "/Users/darren/Library/Mobile Documents/com~apple~CloudDocs/Hogeschool rotterdam/Leerjaar 2/Periode 1/Analyse Networking/Assignment2/LibUserHelper/UserHelper.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/Users/darren/RiderProjects/Socketprogramming/LibUserHelper/UserHelper.csproj",
+  "expectedPackageFiles": [
+    "/Users/darren/.nuget/packages/microsoft.netcore.app.ref/5.0.0/microsoft.netcore.app.ref.5.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.aspnetcore.app.ref/5.0.0/microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512",
+    "/Users/darren/.nuget/packages/microsoft.netcore.app.host.osx-x64/5.0.13/microsoft.netcore.app.host.osx-x64.5.0.13.nupkg.sha512"
+  ],
   "logs": []
 }
